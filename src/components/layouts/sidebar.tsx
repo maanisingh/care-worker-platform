@@ -51,16 +51,20 @@ export function Sidebar() {
     { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
   ]
 
+  const careWorkerMenuItems = [
+    { icon: LayoutDashboard, label: 'Home', href: '/dashboard' },
+    { icon: UserCheck, label: 'My Clients', href: '/dashboard/clients' },
+    { icon: Calendar, label: 'My Schedule', href: '/dashboard/schedule' },
+    { icon: ClipboardList, label: 'Care Logs', href: '/dashboard/care-logs' },
+    { icon: AlertTriangle, label: 'Report Issue', href: '/dashboard/incidents' },
+    { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+  ]
+
   const menuItems = user?.role === 'admin'
     ? adminMenuItems
     : user?.role === 'supervisor'
     ? supervisorMenuItems
-    : []
-
-  // Hide sidebar on mobile for non-admin users
-  if (user?.role !== 'admin' && user?.role !== 'supervisor') {
-    return <div className="hidden md:block w-64"></div>
-  }
+    : careWorkerMenuItems
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen sticky top-0 hidden md:flex">
