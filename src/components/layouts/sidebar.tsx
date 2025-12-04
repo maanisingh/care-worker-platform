@@ -65,7 +65,6 @@ export function Sidebar() {
     { icon: Calendar, label: 'My Schedule', href: '/dashboard/schedule' },
     { icon: Users, label: 'My Care Workers', href: '/dashboard/workers' },
     { icon: ClipboardList, label: 'Care History', href: '/dashboard/care-logs' },
-    { icon: FileText, label: 'Reports', href: '/dashboard/reports' },
     { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
   ]
 
