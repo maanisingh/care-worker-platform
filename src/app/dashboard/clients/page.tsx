@@ -1,12 +1,342 @@
-import { UserCheck } from 'lucide-react'
-import { PlaceholderPage } from '@/components/ui/placeholder-page'
+'use client'
+
+import { motion } from 'framer-motion'
+import {
+  Search,
+  Filter,
+  Plus,
+  Phone,
+  Mail,
+  MapPin,
+  Calendar,
+  Heart,
+  AlertCircle,
+  ChevronRight,
+  Users
+} from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useState } from 'react'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+}
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { y: 0, opacity: 1 }
+}
+
+const clients = [
+  {
+    id: '1',
+    name: 'Margaret Thompson',
+    age: 78,
+    status: 'active',
+    phone: '+44 7700 100201',
+    email: 'margaret.t@email.com',
+    location: 'North London',
+    carePlan: 'Daily Care & Mobility',
+    assignedWorker: 'Sarah Johnson',
+    visits: 28,
+    lastVisit: '2 hours ago',
+    conditions: ['Mobility Issues', 'Hypertension'],
+    notes: 'Prefers morning visits. Requires assistance with washing.'
+  },
+  {
+    id: '2',
+    name: 'John Williams',
+    age: 82,
+    status: 'active',
+    phone: '+44 7700 100202',
+    email: 'john.w@email.com',
+    location: 'East London',
+    carePlan: 'Medication Management',
+    assignedWorker: 'Michael Peters',
+    visits: 45,
+    lastVisit: 'Yesterday',
+    conditions: ['Diabetes', 'Heart Condition'],
+    notes: 'Takes multiple medications. Daily health checks required.'
+  },
+  {
+    id: '3',
+    name: 'Elizabeth Brown',
+    age: 75,
+    status: 'inactive',
+    phone: '+44 7700 100203',
+    email: 'elizabeth.b@email.com',
+    location: 'West London',
+    carePlan: 'Dementia Care Support',
+    assignedWorker: 'Emma Wilson',
+    visits: 52,
+    lastVisit: '1 month ago',
+    conditions: ['Early Dementia', 'Arthritis'],
+    notes: 'Requires supervised activities. Family visits on weekends.'
+  },
+  {
+    id: '4',
+    name: 'Robert Davis',
+    age: 88,
+    status: 'active',
+    phone: '+44 7700 100204',
+    email: 'robert.d@email.com',
+    location: 'South London',
+    carePlan: 'Palliative Care',
+    assignedWorker: 'Emma Wilson',
+    visits: 18,
+    lastVisit: 'Today',
+    conditions: ['End-of-Life Care'],
+    notes: 'Comfort-focused care. Family frequently present.'
+  },
+  {
+    id: '5',
+    name: 'Dorothy Miller',
+    age: 80,
+    status: 'active',
+    phone: '+44 7700 100205',
+    email: 'dorothy.m@email.com',
+    location: 'Central London',
+    carePlan: 'Nutrition Support',
+    assignedWorker: 'Lisa Anderson',
+    visits: 35,
+    lastVisit: '3 days ago',
+    conditions: ['Swallowing Difficulty', 'Weight Loss'],
+    notes: 'Specialist diet. Thickened fluids required.'
+  },
+  {
+    id: '6',
+    name: 'Peter Johnson',
+    age: 76,
+    status: 'active',
+    phone: '+44 7700 100206',
+    email: 'peter.j@email.com',
+    location: 'North London',
+    carePlan: 'Recovery Support',
+    assignedWorker: 'David Chen',
+    visits: 22,
+    lastVisit: '1 week ago',
+    conditions: ['Post-Surgery Recovery'],
+    notes: 'Rehabilitation exercises. Monitor for infection.'
+  }
+]
 
 export default function ClientsPage() {
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-100 text-green-700'
+      case 'inactive':
+        return 'bg-gray-100 text-gray-700'
+      default:
+        return 'bg-gray-100 text-gray-700'
+    }
+  }
+
+  const filteredClients = clients.filter(client =>
+    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    client.location.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const activeCount = clients.filter(c => c.status === 'active').length
+  const totalVisits = clients.reduce((sum, c) => sum + c.visits, 0)
+
   return (
-    <PlaceholderPage
-      title="Client Management"
-      description="View and manage client profiles, care plans, and visit history."
-      icon={<UserCheck className="h-16 w-16 text-blue-600" />}
-    />
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
+      {/* Header */}
+      <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Client Management</h1>
+          <p className="text-gray-600 mt-1">View and manage client profiles, care plans, and visit history</p>
+        </div>
+        <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600">
+          <Plus className="mr-2 h-5 w-5" />
+          Add Client
+        </Button>
+      </motion.div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <motion.div variants={itemVariants}>
+          <Card className="border-0 shadow-md">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Clients</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{clients.length}</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
+                  <Users className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <Card className="border-0 shadow-md">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Active</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{activeCount}</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl">
+                  <Heart className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <Card className="border-0 shadow-md">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Visits</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{totalVisits}</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl">
+                  <Calendar className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <Card className="border-0 shadow-md">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Avg Age</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">
+                    {Math.round(clients.reduce((sum, c) => sum + c.age, 0) / clients.length)}
+                  </p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl">
+                  <AlertCircle className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* Search and Filter */}
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 shadow-md">
+          <CardContent className="p-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Input
+                  placeholder="Search by name or location..."
+                  className="pl-10"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <Button variant="outline">
+                <Filter className="mr-2 h-4 w-4" />
+                Filters
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Clients Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredClients.map((client) => (
+          <motion.div key={client.id} variants={itemVariants}>
+            <Card className="border-0 shadow-md hover:shadow-lg transition-all">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start space-x-3">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+                      {client.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{client.name}</h3>
+                      <p className="text-sm text-gray-600">{client.age} years old</p>
+                    </div>
+                  </div>
+                  <Badge className={getStatusColor(client.status)}>
+                    {client.status === 'active' ? 'Active' : 'Inactive'}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Contact Info */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <Phone className="h-4 w-4 flex-shrink-0" />
+                    <span>{client.phone}</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <Mail className="h-4 w-4 flex-shrink-0" />
+                    <span className="truncate">{client.email}</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <MapPin className="h-4 w-4 flex-shrink-0" />
+                    <span>{client.location}</span>
+                  </div>
+                </div>
+
+                {/* Care Plan */}
+                <div className="pt-3 border-t">
+                  <p className="text-xs font-medium text-gray-600 mb-2">Care Plan</p>
+                  <p className="text-sm font-semibold text-gray-900">{client.carePlan}</p>
+                </div>
+
+                {/* Conditions */}
+                <div>
+                  <p className="text-xs font-medium text-gray-600 mb-2">Medical Conditions</p>
+                  <div className="flex flex-wrap gap-1">
+                    {client.conditions.map((condition, index) => (
+                      <Badge key={index} variant="outline" className="text-xs bg-red-50 text-red-700 border-red-200">
+                        {condition}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-2 gap-2 pt-3 border-t">
+                  <div>
+                    <p className="text-lg font-bold text-gray-900">{client.visits}</p>
+                    <p className="text-xs text-gray-600">Total Visits</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">{client.lastVisit}</p>
+                    <p className="text-xs text-gray-600">Last Visit</p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <Button size="sm" className="w-full bg-gradient-to-r from-blue-600 to-purple-600">
+                  View Profile
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
   )
 }
