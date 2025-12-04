@@ -60,10 +60,21 @@ export function Sidebar() {
     { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
   ]
 
+  const clientMenuItems = [
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
+    { icon: Calendar, label: 'My Schedule', href: '/dashboard/schedule' },
+    { icon: Users, label: 'My Care Workers', href: '/dashboard/workers' },
+    { icon: ClipboardList, label: 'Care History', href: '/dashboard/care-logs' },
+    { icon: FileText, label: 'Reports', href: '/dashboard/reports' },
+    { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+  ]
+
   const menuItems = user?.role === 'admin'
     ? adminMenuItems
     : user?.role === 'supervisor'
     ? supervisorMenuItems
+    : user?.role === 'client'
+    ? clientMenuItems
     : careWorkerMenuItems
 
   return (

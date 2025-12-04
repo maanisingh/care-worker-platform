@@ -14,7 +14,8 @@ import {
   Heart,
   TrendingUp,
   Clock,
-  Star
+  Star,
+  UserCheck
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -126,6 +127,17 @@ export default function LandingPage() {
         'Care Log Entry',
         'Client Profiles',
         'GPS Navigation'
+      ]
+    },
+    {
+      title: 'Client',
+      icon: UserCheck,
+      gradient: 'from-orange-500 via-amber-600 to-yellow-600',
+      features: [
+        'View Care Schedule',
+        'Care Worker Profiles',
+        'Service History',
+        'Direct Messaging'
       ]
     }
   ]

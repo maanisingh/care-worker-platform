@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleLogin = async (role: 'admin' | 'care-worker' | 'supervisor') => {
+  const handleLogin = async (role: 'admin' | 'care-worker' | 'supervisor' | 'client') => {
     setIsLoading(true)
 
     // Simulate login
@@ -24,7 +24,7 @@ export default function LoginPage() {
 
     const mockUser = {
       id: '1',
-      name: role === 'admin' ? 'Admin User' : role === 'care-worker' ? 'Care Worker' : 'Supervisor',
+      name: role === 'admin' ? 'Admin User' : role === 'care-worker' ? 'Care Worker' : role === 'supervisor' ? 'Supervisor' : 'Client User',
       email: email || `${role}@caringhands.com`,
       role: role,
       avatar: undefined,
@@ -162,6 +162,16 @@ export default function LoginPage() {
                   disabled={isLoading}
                 >
                   Supervisor Portal
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+
+                <Button
+                  className="w-full bg-gradient-to-r from-orange-600 to-amber-700 hover:from-orange-700 hover:to-amber-800"
+                  size="lg"
+                  onClick={() => handleLogin('client')}
+                  disabled={isLoading}
+                >
+                  Client Portal
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>

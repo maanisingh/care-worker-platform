@@ -10,7 +10,7 @@ export function MobileBottomNav() {
   const pathname = usePathname()
   const { user } = useAuthStore()
 
-  // Don't show bottom nav for non-mobile users (admin)
+  // Don't show bottom nav for desktop users (admin)
   if (user?.role === 'admin') return null
 
   const navItems = user?.role === 'care-worker'
@@ -19,6 +19,14 @@ export function MobileBottomNav() {
         { icon: Users, label: 'Clients', href: '/dashboard/clients' },
         { icon: ClipboardList, label: 'Care Log', href: '/dashboard/care-logs' },
         { icon: Calendar, label: 'Schedule', href: '/dashboard/schedule' },
+        { icon: Settings, label: 'More', href: '/dashboard/settings' },
+      ]
+    : user?.role === 'client'
+    ? [
+        { icon: Home, label: 'Home', href: '/dashboard' },
+        { icon: Users, label: 'Workers', href: '/dashboard/workers' },
+        { icon: Calendar, label: 'Schedule', href: '/dashboard/schedule' },
+        { icon: ClipboardList, label: 'History', href: '/dashboard/care-logs' },
         { icon: Settings, label: 'More', href: '/dashboard/settings' },
       ]
     : [
