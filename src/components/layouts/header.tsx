@@ -1,10 +1,11 @@
 'use client'
 
-import { Bell, Search, Menu, Heart } from 'lucide-react'
+import { Bell, Search, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useAuthStore } from '@/stores/auth-store'
+import { MobileDrawerMenu } from './mobile-drawer-menu'
 
 export function Header() {
   const { user } = useAuthStore()
@@ -12,12 +13,18 @@ export function Header() {
   return (
     <header className="h-16 bg-white border-b border-gray-200 sticky top-0 z-40 backdrop-blur-sm bg-white/95">
       <div className="h-full px-4 md:px-6 flex items-center justify-between">
-        {/* Left - Logo (mobile only) */}
-        <div className="flex items-center space-x-3 md:hidden">
-          <div className="p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg">
-            <Heart className="h-5 w-5 text-white" />
+        {/* Left - Mobile Menu & Logo */}
+        <div className="flex items-center space-x-3">
+          {/* Hamburger Menu (mobile only) */}
+          <MobileDrawerMenu />
+
+          {/* Logo (mobile only) */}
+          <div className="flex items-center space-x-2 md:hidden">
+            <div className="p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg">
+              <Heart className="h-5 w-5 text-white" />
+            </div>
+            <h2 className="text-lg font-bold text-gray-900">Caring Hands</h2>
           </div>
-          <h2 className="text-lg font-bold text-gray-900">Caring Hands</h2>
         </div>
 
         {/* Center - Search (desktop only) */}
