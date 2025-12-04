@@ -599,6 +599,22 @@ export default function SchedulePage() {
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>
+
+      {/* Mobile FAB */}
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="md:hidden fixed bottom-20 right-4 z-40"
+      >
+        <Button
+          size="lg"
+          className="h-14 w-14 rounded-full shadow-2xl bg-gradient-to-r from-blue-600 to-purple-600"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
+      </motion.div>
     </motion.div>
   )
 }

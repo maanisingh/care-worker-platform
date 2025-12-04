@@ -30,7 +30,7 @@ export function MobileBottomNav() {
       ]
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-gray-200 pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-2xl pb-safe">
       <div className="grid grid-cols-5 h-16">
         {navItems.map((item) => {
           const isActive = pathname === item.href
@@ -39,16 +39,22 @@ export function MobileBottomNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center justify-center space-y-1 transition-colors",
+                "flex flex-col items-center justify-center space-y-1 transition-all duration-200 relative",
                 isActive
-                  ? "text-blue-600"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "text-blue-600 bg-blue-50/50"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               )}
             >
-              <item.icon className={cn("h-5 w-5", isActive && "fill-blue-100")} />
-              <span className="text-xs font-medium">{item.label}</span>
+              <item.icon className={cn(
+                "h-6 w-6 transition-all",
+                isActive && "fill-blue-100 scale-110"
+              )} />
+              <span className={cn(
+                "text-xs font-medium transition-all",
+                isActive && "font-semibold"
+              )}>{item.label}</span>
               {isActive && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-blue-600 rounded-full" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full shadow-lg" />
               )}
             </Link>
           )
