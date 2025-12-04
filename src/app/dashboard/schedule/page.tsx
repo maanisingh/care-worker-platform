@@ -6,7 +6,7 @@ export default function SchedulePage() {
     <PlaceholderPage
       title="Schedule & Calendar"
       description="View and manage care worker schedules, assign visits, and optimize routes."
-      icon={Calendar}
+      icon={<Calendar className="h-16 w-16 text-blue-600" />}
     />
   )
 }

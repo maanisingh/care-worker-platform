@@ -6,7 +6,7 @@ export default function TeamPage() {
     <PlaceholderPage
       title="My Team"
       description="Manage your team members, track performance, and assign tasks."
-      icon={Users}
+      icon={<Users className="h-16 w-16 text-blue-600" />}
     />
   )
 }

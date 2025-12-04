@@ -6,7 +6,7 @@ export default function WorkersPage() {
     <PlaceholderPage
       title="Care Workers Directory"
       description="Manage your care workers, view profiles, track performance, and assign shifts."
-      icon={Users}
+      icon={<Users className="h-16 w-16 text-blue-600" />}
     />
   )
 }

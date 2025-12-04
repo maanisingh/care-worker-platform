@@ -1,18 +1,18 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { LucideIcon } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { ReactNode } from 'react'
 
 interface PlaceholderPageProps {
   title: string
   description: string
-  icon: LucideIcon
+  icon: ReactNode
   comingSoon?: boolean
 }
 
-export function PlaceholderPage({ title, description, icon: Icon, comingSoon = true }: PlaceholderPageProps) {
+export function PlaceholderPage({ title, description, icon, comingSoon = true }: PlaceholderPageProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -23,7 +23,7 @@ export function PlaceholderPage({ title, description, icon: Icon, comingSoon = t
         <CardContent className="p-12 text-center space-y-6">
           <div className="flex justify-center">
             <div className="p-6 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl">
-              <Icon className="h-16 w-16 text-blue-600" />
+              {icon}
             </div>
           </div>
           <div className="space-y-2">

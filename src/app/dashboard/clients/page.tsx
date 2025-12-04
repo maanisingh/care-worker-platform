@@ -6,7 +6,7 @@ export default function ClientsPage() {
     <PlaceholderPage
       title="Client Management"
       description="View and manage client profiles, care plans, and visit history."
-      icon={UserCheck}
+      icon={<UserCheck className="h-16 w-16 text-blue-600" />}
     />
   )
 }

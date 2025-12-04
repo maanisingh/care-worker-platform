@@ -6,7 +6,7 @@ export default function IncidentsPage() {
     <PlaceholderPage
       title="Incident Reports"
       description="Track and manage incident reports, investigations, and resolutions."
-      icon={AlertTriangle}
+      icon={<AlertTriangle className="h-16 w-16 text-blue-600" />}
     />
   )
 }

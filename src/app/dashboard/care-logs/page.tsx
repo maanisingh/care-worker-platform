@@ -6,7 +6,7 @@ export default function CareLogsPage() {
     <PlaceholderPage
       title="Care Logs"
       description="View, manage, and analyze care logs submitted by care workers."
-      icon={ClipboardList}
+      icon={<ClipboardList className="h-16 w-16 text-blue-600" />}
     />
   )
 }

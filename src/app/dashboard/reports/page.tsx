@@ -6,7 +6,7 @@ export default function ReportsPage() {
     <PlaceholderPage
       title="Reports & Analytics"
       description="Generate reports, view analytics, and export data for compliance."
-      icon={BarChart3}
+      icon={<BarChart3 className="h-16 w-16 text-blue-600" />}
     />
   )
 }

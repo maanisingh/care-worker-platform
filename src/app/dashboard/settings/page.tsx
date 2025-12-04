@@ -6,7 +6,7 @@ export default function SettingsPage() {
     <PlaceholderPage
       title="Settings"
       description="Configure your account, notification preferences, and system settings."
-      icon={Settings}
+      icon={<Settings className="h-16 w-16 text-blue-600" />}
     />
   )
 }
