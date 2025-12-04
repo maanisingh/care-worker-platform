@@ -12,13 +12,20 @@ import {
   Heart,
   AlertCircle,
   ChevronRight,
-  Users
+  Users,
+  FileText,
+  Pill,
+  Clock,
+  User,
+  Edit,
+  X
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useState } from 'react'
+import { Drawer } from 'vaul'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -33,7 +40,30 @@ const itemVariants = {
   visible: { y: 0, opacity: 1 }
 }
 
-const clients = [
+type Client = {
+  id: string
+  name: string
+  age: number
+  status: string
+  phone: string
+  email: string
+  location: string
+  carePlan: string
+  assignedWorker: string
+  visits: number
+  lastVisit: string
+  conditions: string[]
+  notes: string
+  address?: string
+  emergencyContact?: { name: string; phone: string; relationship: string }
+  medications?: { name: string; dosage: string; frequency: string }[]
+  medicalHistory?: string[]
+  assignedWorkers?: string[]
+  visitSchedule?: { day: string; time: string; worker: string }[]
+  familyContacts?: { name: string; relationship: string; phone: string }[]
+}
+
+const clients: Client[] = [
   {
     id: '1',
     name: 'Margaret Thompson',
@@ -47,7 +77,24 @@ const clients = [
     visits: 28,
     lastVisit: '2 hours ago',
     conditions: ['Mobility Issues', 'Hypertension'],
-    notes: 'Prefers morning visits. Requires assistance with washing.'
+    notes: 'Prefers morning visits. Requires assistance with washing.',
+    address: '45 Oak Avenue, North London, N2 8QB',
+    emergencyContact: { name: 'David Thompson', phone: '+44 7700 100999', relationship: 'Son' },
+    medications: [
+      { name: 'Amlodipine', dosage: '5mg', frequency: 'Once daily' },
+      { name: 'Paracetamol', dosage: '500mg', frequency: 'As needed' }
+    ],
+    medicalHistory: ['Hip replacement (2020)', 'Hypertension diagnosed (2015)', 'Fall incident (2023)'],
+    assignedWorkers: ['Sarah Johnson', 'Emma Wilson'],
+    visitSchedule: [
+      { day: 'Monday', time: '09:00 AM', worker: 'Sarah Johnson' },
+      { day: 'Wednesday', time: '09:00 AM', worker: 'Sarah Johnson' },
+      { day: 'Friday', time: '09:00 AM', worker: 'Emma Wilson' }
+    ],
+    familyContacts: [
+      { name: 'David Thompson', relationship: 'Son', phone: '+44 7700 100999' },
+      { name: 'Sarah Thompson', relationship: 'Daughter', phone: '+44 7700 100998' }
+    ]
   },
   {
     id: '2',
@@ -128,6 +175,13 @@ const clients = [
 
 export default function ClientsPage() {
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+
+  const openClientDrawer = (client: Client) => {
+    setSelectedClient(client)
+    setIsDrawerOpen(true)
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -328,7 +382,11 @@ export default function ClientsPage() {
                 </div>
 
                 {/* Actions */}
-                <Button size="sm" className="w-full bg-gradient-to-r from-blue-600 to-purple-600">
+                <Button
+                  size="sm"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600"
+                  onClick={() => openClientDrawer(client)}
+                >
                   View Profile
                   <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -337,6 +395,269 @@ export default function ClientsPage() {
           </motion.div>
         ))}
       </div>
+
+      {/* Client Detail Drawer */}
+      <Drawer.Root open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 bg-black/40 z-50" />
+          <Drawer.Content className="bg-white flex flex-col rounded-t-[10px] h-[96%] mt-24 fixed bottom-0 left-0 right-0 z-50 md:right-0 md:left-auto md:w-[600px] md:rounded-l-[10px] md:rounded-tr-none md:mt-0 md:h-full">
+            <div className="p-4 bg-white rounded-t-[10px] flex-1 overflow-y-auto">
+              <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-4 md:hidden" />
+
+              {selectedClient && (
+                <div className="space-y-6">
+                  {/* Header */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start space-x-4">
+                      <div className="h-20 w-20 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white font-semibold text-2xl flex-shrink-0">
+                        {selectedClient.name.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-900">{selectedClient.name}</h2>
+                        <p className="text-gray-600">{selectedClient.age} years old</p>
+                        <div className="mt-2">
+                          <Badge className={getStatusColor(selectedClient.status)}>
+                            {selectedClient.status === 'active' ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setIsDrawerOpen(false)}
+                    >
+                      <X className="h-5 w-5" />
+                    </Button>
+                  </div>
+
+                  {/* Contact Information */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Contact Information</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex items-center space-x-3">
+                        <Phone className="h-5 w-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-600">Phone</p>
+                          <p className="font-medium">{selectedClient.phone}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Mail className="h-5 w-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-600">Email</p>
+                          <p className="font-medium">{selectedClient.email}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <MapPin className="h-5 w-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-600">Address</p>
+                          <p className="font-medium">{selectedClient.address}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Emergency Contact */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <AlertCircle className="h-5 w-5 text-red-500" />
+                        Emergency Contact
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Name:</span>
+                        <span className="font-medium">{selectedClient.emergencyContact?.name}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Relationship:</span>
+                        <span className="font-medium">{selectedClient.emergencyContact?.relationship}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Phone:</span>
+                        <span className="font-medium">{selectedClient.emergencyContact?.phone}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Care Plan */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Care Plan
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="font-semibold text-lg text-gray-900 mb-2">{selectedClient.carePlan}</p>
+                      <p className="text-sm text-gray-600 italic">{selectedClient.notes}</p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Medical Conditions */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Heart className="h-5 w-5" />
+                        Medical Conditions
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedClient.conditions.map((condition, index) => (
+                          <Badge key={index} variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                            {condition}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Medications */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Pill className="h-5 w-5" />
+                        Medications
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {selectedClient.medications?.map((med, index) => (
+                        <div key={index} className="p-3 bg-blue-50 rounded-lg">
+                          <p className="font-semibold text-gray-900">{med.name}</p>
+                          <div className="flex justify-between mt-1 text-sm">
+                            <span className="text-gray-600">Dosage: {med.dosage}</span>
+                            <span className="text-gray-600">{med.frequency}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+
+                  {/* Medical History */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Medical History
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {selectedClient.medicalHistory?.map((item, index) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="h-2 w-2 bg-blue-600 rounded-full mt-2 flex-shrink-0" />
+                            <span className="text-gray-700">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+
+                  {/* Assigned Workers */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Users className="h-5 w-5" />
+                        Assigned Workers
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        {selectedClient.assignedWorkers?.map((worker, index) => (
+                          <div key={index} className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
+                            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold text-xs">
+                              {worker.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <span className="text-gray-700">{worker}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Visit Schedule */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Calendar className="h-5 w-5" />
+                        Visit Schedule
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {selectedClient.visitSchedule?.map((visit, index) => (
+                        <div key={index} className="flex justify-between items-center p-3 bg-purple-50 rounded">
+                          <div>
+                            <p className="font-medium text-gray-900">{visit.day}</p>
+                            <p className="text-sm text-gray-600">{visit.time}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm text-gray-600">{visit.worker}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+
+                  {/* Family Contacts */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Users className="h-5 w-5" />
+                        Family Contacts
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {selectedClient.familyContacts?.map((contact, index) => (
+                        <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                          <div>
+                            <p className="font-medium text-gray-900">{contact.name}</p>
+                            <p className="text-sm text-gray-600">{contact.relationship}</p>
+                          </div>
+                          <p className="text-sm font-medium text-gray-700">{contact.phone}</p>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+
+                  {/* Stats Summary */}
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="pt-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-3xl font-bold text-gray-900">{selectedClient.visits}</p>
+                          <p className="text-sm text-gray-600">Total Visits</p>
+                        </div>
+                        <div>
+                          <p className="text-lg font-bold text-gray-900">{selectedClient.lastVisit}</p>
+                          <p className="text-sm text-gray-600">Last Visit</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Action Buttons */}
+                  <div className="flex space-x-3 pb-4">
+                    <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600">
+                      <Edit className="mr-2 h-4 w-4" />
+                      Edit Profile
+                    </Button>
+                    <Button className="flex-1" variant="outline">
+                      <Phone className="mr-2 h-4 w-4" />
+                      Call Client
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
     </motion.div>
   )
 }

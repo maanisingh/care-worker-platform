@@ -12,13 +12,21 @@ import {
   ChevronRight,
   Activity,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Heart,
+  Thermometer,
+  Droplet,
+  Image,
+  X,
+  ThumbsUp,
+  ThumbsDown
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useState } from 'react'
+import { Drawer } from 'vaul'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -33,7 +41,30 @@ const itemVariants = {
   visible: { y: 0, opacity: 1 }
 }
 
-const careLogs = [
+type CareLog = {
+  id: string
+  clientName: string
+  worker: string
+  date: string
+  time?: string
+  status: string
+  activities: string[]
+  notes: string
+  duration: number
+  type: string
+  vitals?: {
+    bloodPressure?: string
+    heartRate?: number
+    temperature?: number
+    oxygenLevel?: number
+  }
+  medicationsGiven?: { name: string; time: string; dosage: string }[]
+  photos?: string[]
+  workerSignature?: string
+  clientFeedback?: string
+}
+
+const careLogs: CareLog[] = [
   {
     id: '1',
     clientName: 'Margaret Thompson',
@@ -44,7 +75,20 @@ const careLogs = [
     activities: ['Morning washing', 'Breakfast assistance', 'Medication given'],
     notes: 'Client in good mood. Took all medications without issue. Vitals stable.',
     duration: 60,
-    type: 'Daily Care'
+    type: 'Daily Care',
+    vitals: {
+      bloodPressure: '128/82',
+      heartRate: 72,
+      temperature: 36.8,
+      oxygenLevel: 98
+    },
+    medicationsGiven: [
+      { name: 'Amlodipine', time: '09:15', dosage: '5mg' },
+      { name: 'Paracetamol', time: '09:15', dosage: '500mg' }
+    ],
+    photos: [],
+    workerSignature: 'Sarah Johnson',
+    clientFeedback: 'Very satisfied with care today. Sarah was very helpful.'
   },
   {
     id: '2',
@@ -109,6 +153,13 @@ const careLogs = [
 export default function CareLogsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'approved' | 'pending'>('all')
+  const [selectedLog, setSelectedLog] = useState<CareLog | null>(null)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+
+  const openLogDrawer = (log: CareLog) => {
+    setSelectedLog(log)
+    setIsDrawerOpen(true)
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -343,7 +394,11 @@ export default function CareLogsPage() {
                       </div>
                     </div>
                   </div>
-                  <Button size="sm" variant="ghost">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => openLogDrawer(log)}
+                  >
                     <ChevronRight className="h-5 w-5" />
                   </Button>
                 </div>
@@ -363,6 +418,255 @@ export default function CareLogsPage() {
           </Card>
         </motion.div>
       )}
+
+      {/* Care Log Detail Drawer */}
+      <Drawer.Root open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 bg-black/40 z-50" />
+          <Drawer.Content className="bg-white flex flex-col rounded-t-[10px] h-[96%] mt-24 fixed bottom-0 left-0 right-0 z-50 md:right-0 md:left-auto md:w-[600px] md:rounded-l-[10px] md:rounded-tr-none md:mt-0 md:h-full">
+            <div className="p-4 bg-white rounded-t-[10px] flex-1 overflow-y-auto">
+              <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-4 md:hidden" />
+
+              {selectedLog && (
+                <div className="space-y-6">
+                  {/* Header */}
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h2 className="text-2xl font-bold text-gray-900">Care Log Details</h2>
+                        <Badge className={`${getStatusColor(selectedLog.status)} flex items-center gap-1`}>
+                          {getStatusIcon(selectedLog.status)}
+                          <span className="capitalize">{selectedLog.status}</span>
+                        </Badge>
+                      </div>
+                      <p className="text-gray-600">{selectedLog.type}</p>
+                      <p className="text-sm text-gray-500">{selectedLog.date} {selectedLog.time && `• ${selectedLog.time}`}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setIsDrawerOpen(false)}
+                    >
+                      <X className="h-5 w-5" />
+                    </Button>
+                  </div>
+
+                  {/* Client & Worker Info */}
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="pt-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600 mb-1">Client</p>
+                          <div className="flex items-center space-x-2">
+                            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white font-semibold text-xs">
+                              {selectedLog.clientName.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <p className="font-medium text-gray-900">{selectedLog.clientName}</p>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600 mb-1">Care Worker</p>
+                          <div className="flex items-center space-x-2">
+                            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold text-xs">
+                              {selectedLog.worker.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <p className="font-medium text-gray-900">{selectedLog.worker}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-4 pt-4 border-t">
+                        <p className="text-sm text-gray-600">Duration</p>
+                        <p className="font-semibold text-lg text-gray-900">{selectedLog.duration} minutes</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Activities Completed */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Activity className="h-5 w-5" />
+                        Activities Completed
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {selectedLog.activities.map((activity, index) => (
+                          <li key={index} className="flex items-start space-x-3">
+                            <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                            <span className="text-gray-700">{activity}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+
+                  {/* Vitals Recorded */}
+                  {selectedLog.vitals && (
+                    <Card className="border-0 shadow-sm">
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Heart className="h-5 w-5" />
+                          Vitals Recorded
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-2 gap-4">
+                          {selectedLog.vitals.bloodPressure && (
+                            <div className="p-3 bg-red-50 rounded-lg">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Heart className="h-4 w-4 text-red-600" />
+                                <p className="text-xs text-gray-600">Blood Pressure</p>
+                              </div>
+                              <p className="font-bold text-lg text-gray-900">{selectedLog.vitals.bloodPressure}</p>
+                              <p className="text-xs text-gray-500">mmHg</p>
+                            </div>
+                          )}
+                          {selectedLog.vitals.heartRate && (
+                            <div className="p-3 bg-pink-50 rounded-lg">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Activity className="h-4 w-4 text-pink-600" />
+                                <p className="text-xs text-gray-600">Heart Rate</p>
+                              </div>
+                              <p className="font-bold text-lg text-gray-900">{selectedLog.vitals.heartRate}</p>
+                              <p className="text-xs text-gray-500">bpm</p>
+                            </div>
+                          )}
+                          {selectedLog.vitals.temperature && (
+                            <div className="p-3 bg-orange-50 rounded-lg">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Thermometer className="h-4 w-4 text-orange-600" />
+                                <p className="text-xs text-gray-600">Temperature</p>
+                              </div>
+                              <p className="font-bold text-lg text-gray-900">{selectedLog.vitals.temperature}°C</p>
+                              <p className="text-xs text-gray-500">celsius</p>
+                            </div>
+                          )}
+                          {selectedLog.vitals.oxygenLevel && (
+                            <div className="p-3 bg-blue-50 rounded-lg">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Droplet className="h-4 w-4 text-blue-600" />
+                                <p className="text-xs text-gray-600">Oxygen Level</p>
+                              </div>
+                              <p className="font-bold text-lg text-gray-900">{selectedLog.vitals.oxygenLevel}%</p>
+                              <p className="text-xs text-gray-500">SpO2</p>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Medications Given */}
+                  {selectedLog.medicationsGiven && selectedLog.medicationsGiven.length > 0 && (
+                    <Card className="border-0 shadow-sm">
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <FileText className="h-5 w-5" />
+                          Medications Administered
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        {selectedLog.medicationsGiven.map((med, index) => (
+                          <div key={index} className="p-3 bg-purple-50 rounded-lg">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <p className="font-semibold text-gray-900">{med.name}</p>
+                                <p className="text-sm text-gray-600">Dosage: {med.dosage}</p>
+                              </div>
+                              <Badge variant="outline" className="bg-white">
+                                {med.time}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Notes */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Care Notes
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-700 italic">"{selectedLog.notes}"</p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Client Feedback */}
+                  {selectedLog.clientFeedback && (
+                    <Card className="border-0 shadow-sm">
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <User className="h-5 w-5" />
+                          Client Feedback
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-700">"{selectedLog.clientFeedback}"</p>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Photos Placeholder */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Image className="h-5 w-5" />
+                        Photos & Documentation
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-center p-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                        <div className="text-center">
+                          <Image className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-600">No photos attached</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Signature */}
+                  {selectedLog.workerSignature && (
+                    <Card className="border-0 shadow-sm">
+                      <CardContent className="pt-6">
+                        <p className="text-sm text-gray-600 mb-2">Signed by:</p>
+                        <p className="font-semibold text-gray-900 text-lg italic">{selectedLog.workerSignature}</p>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Action Buttons */}
+                  {selectedLog.status === 'pending' && (
+                    <div className="flex space-x-3 pb-4">
+                      <Button className="flex-1 bg-gradient-to-r from-green-600 to-green-700">
+                        <ThumbsUp className="mr-2 h-4 w-4" />
+                        Approve Log
+                      </Button>
+                      <Button className="flex-1 bg-gradient-to-r from-red-600 to-red-700">
+                        <ThumbsDown className="mr-2 h-4 w-4" />
+                        Reject Log
+                      </Button>
+                    </div>
+                  )}
+                  {selectedLog.status === 'approved' && (
+                    <div className="pb-4">
+                      <Badge className="bg-green-100 text-green-700 text-sm py-2 px-4">
+                        <CheckCircle className="mr-2 h-4 w-4" />
+                        This care log has been approved
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
     </motion.div>
   )
 }

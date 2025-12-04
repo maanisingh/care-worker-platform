@@ -11,12 +11,17 @@ import {
   ChevronRight,
   AlertCircle,
   CheckCircle,
-  Users
+  Users,
+  FileText,
+  Play,
+  X,
+  Mail
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
+import { Drawer } from 'vaul'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -31,7 +36,27 @@ const itemVariants = {
   visible: { y: 0, opacity: 1 }
 }
 
-const visits = [
+type Visit = {
+  id: string
+  clientName: string
+  worker: string
+  date: string
+  time: string
+  location: string
+  status: string
+  type: string
+  phone: string
+  clientAge?: number
+  workerPhone?: string
+  address?: string
+  careTasks?: string[]
+  notes?: string
+  checkInTime?: string
+  checkOutTime?: string
+  clientConditions?: string[]
+}
+
+const visits: Visit[] = [
   {
     id: '1',
     clientName: 'Margaret Thompson',
@@ -41,7 +66,15 @@ const visits = [
     location: 'North London',
     status: 'completed',
     type: 'Daily Care',
-    phone: '+44 7700 100201'
+    phone: '+44 7700 100201',
+    clientAge: 78,
+    workerPhone: '+44 7700 900123',
+    address: '45 Oak Avenue, North London, N2 8QB',
+    careTasks: ['Morning washing assistance', 'Breakfast preparation', 'Medication administration', 'Light exercise'],
+    notes: 'Client prefers morning visits. Check blood pressure before medication.',
+    checkInTime: '09:02 AM',
+    checkOutTime: '10:05 AM',
+    clientConditions: ['Mobility Issues', 'Hypertension']
   },
   {
     id: '2',
@@ -128,6 +161,13 @@ const today = new Date('2024-12-04')
 export default function SchedulePage() {
   const [selectedDate, setSelectedDate] = useState('2024-12-04')
   const [viewType, setViewType] = useState<'daily' | 'weekly'>('daily')
+  const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+
+  const openVisitDrawer = (visit: Visit) => {
+    setSelectedVisit(visit)
+    setIsDrawerOpen(true)
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -322,7 +362,11 @@ export default function SchedulePage() {
                       </div>
                     </div>
                   </div>
-                  <Button size="sm" variant="ghost">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => openVisitDrawer(visit)}
+                  >
                     <ChevronRight className="h-5 w-5" />
                   </Button>
                 </div>
@@ -342,6 +386,219 @@ export default function SchedulePage() {
           </Card>
         </motion.div>
       )}
+
+      {/* Visit Detail Drawer */}
+      <Drawer.Root open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 bg-black/40 z-50" />
+          <Drawer.Content className="bg-white flex flex-col rounded-t-[10px] h-[96%] mt-24 fixed bottom-0 left-0 right-0 z-50 md:right-0 md:left-auto md:w-[600px] md:rounded-l-[10px] md:rounded-tr-none md:mt-0 md:h-full">
+            <div className="p-4 bg-white rounded-t-[10px] flex-1 overflow-y-auto">
+              <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-4 md:hidden" />
+
+              {selectedVisit && (
+                <div className="space-y-6">
+                  {/* Header */}
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h2 className="text-2xl font-bold text-gray-900">{selectedVisit.type}</h2>
+                        <Badge className={`${getStatusColor(selectedVisit.status)} flex items-center gap-1`}>
+                          {getStatusIcon(selectedVisit.status)}
+                          <span className="capitalize">{selectedVisit.status.replace('-', ' ')}</span>
+                        </Badge>
+                      </div>
+                      <p className="text-gray-600">{selectedVisit.date} • {selectedVisit.time}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setIsDrawerOpen(false)}
+                    >
+                      <X className="h-5 w-5" />
+                    </Button>
+                  </div>
+
+                  {/* Client Information */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <User className="h-5 w-5" />
+                        Client Information
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white font-semibold">
+                          {selectedVisit.clientName.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">{selectedVisit.clientName}</p>
+                          <p className="text-sm text-gray-600">{selectedVisit.clientAge} years old</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Phone className="h-5 w-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-600">Phone</p>
+                          <p className="font-medium">{selectedVisit.phone}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <MapPin className="h-5 w-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-600">Address</p>
+                          <p className="font-medium">{selectedVisit.address}</p>
+                        </div>
+                      </div>
+                      {selectedVisit.clientConditions && (
+                        <div>
+                          <p className="text-sm text-gray-600 mb-2">Medical Conditions</p>
+                          <div className="flex flex-wrap gap-1">
+                            {selectedVisit.clientConditions.map((condition, index) => (
+                              <Badge key={index} variant="outline" className="bg-red-50 text-red-700 border-red-200 text-xs">
+                                {condition}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Worker Information */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Users className="h-5 w-5" />
+                        Assigned Worker
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
+                          {selectedVisit.worker.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">{selectedVisit.worker}</p>
+                          <p className="text-sm text-gray-600">Care Worker</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Phone className="h-5 w-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-600">Phone</p>
+                          <p className="font-medium">{selectedVisit.workerPhone}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Visit Details */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Clock className="h-5 w-5" />
+                        Visit Details
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600">Scheduled Time</p>
+                          <p className="font-medium">{selectedVisit.time}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Visit Type</p>
+                          <p className="font-medium">{selectedVisit.type}</p>
+                        </div>
+                      </div>
+                      {selectedVisit.checkInTime && (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-sm text-gray-600">Check-in Time</p>
+                            <p className="font-medium text-green-600">{selectedVisit.checkInTime}</p>
+                          </div>
+                          {selectedVisit.checkOutTime && (
+                            <div>
+                              <p className="text-sm text-gray-600">Check-out Time</p>
+                              <p className="font-medium text-blue-600">{selectedVisit.checkOutTime}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-sm text-gray-600">Location</p>
+                        <p className="font-medium">{selectedVisit.location}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Care Tasks */}
+                  <Card className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Care Tasks
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {selectedVisit.careTasks?.map((task, index) => (
+                          <li key={index} className="flex items-start space-x-3">
+                            <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                            <span className="text-gray-700">{task}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+
+                  {/* Notes */}
+                  {selectedVisit.notes && (
+                    <Card className="border-0 shadow-sm">
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <FileText className="h-5 w-5" />
+                          Visit Notes
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-700 italic">"{selectedVisit.notes}"</p>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col space-y-3 pb-4">
+                    {selectedVisit.status === 'scheduled' && (
+                      <Button className="w-full bg-gradient-to-r from-green-600 to-green-700" size="lg">
+                        <Play className="mr-2 h-5 w-5" />
+                        Start Visit
+                      </Button>
+                    )}
+                    {selectedVisit.status === 'in-progress' && (
+                      <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600" size="lg">
+                        <CheckCircle className="mr-2 h-5 w-5" />
+                        Complete Visit
+                      </Button>
+                    )}
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button variant="outline">
+                        <Phone className="mr-2 h-4 w-4" />
+                        Call Client
+                      </Button>
+                      <Button variant="outline">
+                        <Phone className="mr-2 h-4 w-4" />
+                        Call Worker
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
     </motion.div>
   )
 }
