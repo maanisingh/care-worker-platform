@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import { Drawer } from 'vaul'
+import { useAuthStore } from '@/stores/auth-store'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -152,6 +153,56 @@ const visits: Visit[] = [
     status: 'scheduled',
     type: 'Medication Check',
     phone: '+44 7700 100202'
+  },
+  // Client User visits (for demo client login)
+  {
+    id: '9',
+    clientName: 'Client User',
+    worker: 'Sarah Johnson',
+    date: '2024-12-04',
+    time: '09:00 - 10:00',
+    location: 'Your Home',
+    status: 'scheduled',
+    type: 'Personal Care',
+    phone: '+44 7700 900000',
+    workerPhone: '+44 7700 900123',
+    address: 'Your Address',
+    careTasks: ['Morning washing assistance', 'Breakfast preparation', 'Medication administration'],
+    notes: 'Regular morning care visit'
+  },
+  {
+    id: '10',
+    clientName: 'Client User',
+    worker: 'Michael Peters',
+    date: '2024-12-04',
+    time: '14:00 - 15:00',
+    location: 'Your Home',
+    status: 'scheduled',
+    type: 'Meal Preparation',
+    phone: '+44 7700 900000',
+    workerPhone: '+44 7700 900124'
+  },
+  {
+    id: '11',
+    clientName: 'Client User',
+    worker: 'Sarah Johnson',
+    date: '2024-12-05',
+    time: '09:00 - 10:00',
+    location: 'Your Home',
+    status: 'scheduled',
+    type: 'Personal Care',
+    phone: '+44 7700 900000'
+  },
+  {
+    id: '12',
+    clientName: 'Client User',
+    worker: 'Emma Wilson',
+    date: '2024-12-05',
+    time: '16:00 - 17:00',
+    location: 'Your Home',
+    status: 'scheduled',
+    type: 'Companionship',
+    phone: '+44 7700 900000'
   }
 ]
 
@@ -159,6 +210,7 @@ const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frid
 const today = new Date('2024-12-04')
 
 export default function SchedulePage() {
+  const { user } = useAuthStore()
   const [selectedDate, setSelectedDate] = useState('2024-12-04')
   const [viewType, setViewType] = useState<'daily' | 'weekly'>('daily')
   const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null)
@@ -168,6 +220,13 @@ export default function SchedulePage() {
     setSelectedVisit(visit)
     setIsDrawerOpen(true)
   }
+
+  // Filter visits based on user role
+  // For clients, only show visits where they are the client
+  // In a real app, we'd filter by user.id === clientId
+  const filteredVisits = user?.role === 'client'
+    ? visits.filter(v => v.clientName === 'Client User') // Mock: In real app, match by clientId
+    : visits
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -195,8 +254,8 @@ export default function SchedulePage() {
     }
   }
 
-  const todayVisits = visits.filter(v => v.date === selectedDate).sort((a, b) => a.time.localeCompare(b.time))
-  const weekVisits = visits.filter(v => {
+  const todayVisits = filteredVisits.filter(v => v.date === selectedDate).sort((a, b) => a.time.localeCompare(b.time))
+  const weekVisits = filteredVisits.filter(v => {
     const date = new Date(v.date)
     const selectedWeekStart = new Date(selectedDate)
     selectedWeekStart.setDate(selectedWeekStart.getDate() - selectedWeekStart.getDay())
@@ -219,13 +278,21 @@ export default function SchedulePage() {
       {/* Header */}
       <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Schedule & Calendar</h1>
-          <p className="text-gray-600 mt-1">View and manage care worker schedules and visits</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {user?.role === 'client' ? 'My Care Schedule' : 'Schedule & Calendar'}
+          </h1>
+          <p className="text-gray-600 mt-1">
+            {user?.role === 'client'
+              ? 'View your upcoming care visits and appointments'
+              : 'View and manage care worker schedules and visits'}
+          </p>
         </div>
-        <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600">
-          <Plus className="mr-2 h-5 w-5" />
-          Schedule Visit
-        </Button>
+        {user?.role !== 'client' && (
+          <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600">
+            <Plus className="mr-2 h-5 w-5" />
+            Schedule Visit
+          </Button>
+        )}
       </motion.div>
 
       {/* Stats Cards */}
