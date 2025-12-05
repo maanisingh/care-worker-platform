@@ -14,7 +14,15 @@ import {
   LogOut,
   Heart,
   BarChart3,
-  Clock
+  Clock,
+  CheckSquare,
+  DollarSign,
+  Pill,
+  FolderOpen,
+  MessageSquare,
+  GraduationCap,
+  Clipboard,
+  FileCheck
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
@@ -32,11 +40,14 @@ export function Sidebar() {
 
   const adminMenuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-    { icon: Users, label: 'Care Workers', href: '/dashboard/workers' },
     { icon: UserCheck, label: 'Clients', href: '/dashboard/clients' },
-    { icon: Calendar, label: 'Schedule', href: '/dashboard/schedule' },
-    { icon: ClipboardList, label: 'Care Logs', href: '/dashboard/care-logs' },
-    { icon: AlertTriangle, label: 'Incidents', href: '/dashboard/incidents' },
+    { icon: Users, label: 'Care Workers', href: '/dashboard/workers' },
+    { icon: Calendar, label: 'Schedulers', href: '/dashboard/schedule' },
+    { icon: CheckSquare, label: 'Visits & Tasks', href: '/dashboard/visits' },
+    { icon: Clock, label: 'Timesheet & Payroll', href: '/dashboard/timesheet' },
+    { icon: Pill, label: 'Medication Admin', href: '/dashboard/medication' },
+    { icon: AlertTriangle, label: 'Incident & Safeguarding', href: '/dashboard/incidents' },
+    { icon: FolderOpen, label: 'Documents & Training', href: '/dashboard/documents' },
     { icon: BarChart3, label: 'Reports', href: '/dashboard/reports' },
     { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
   ]
@@ -52,20 +63,20 @@ export function Sidebar() {
   ]
 
   const careWorkerMenuItems = [
-    { icon: LayoutDashboard, label: 'Home', href: '/dashboard' },
-    { icon: UserCheck, label: 'My Clients', href: '/dashboard/clients' },
-    { icon: Calendar, label: 'My Schedule', href: '/dashboard/schedule' },
-    { icon: ClipboardList, label: 'Care Logs', href: '/dashboard/care-logs' },
-    { icon: AlertTriangle, label: 'Report Issue', href: '/dashboard/incidents' },
-    { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+    { icon: LayoutDashboard, label: 'Home / Today', href: '/dashboard' },
+    { icon: Clipboard, label: 'Visit Detail', href: '/dashboard/visit-detail' },
+    { icon: Pill, label: 'Medication', href: '/dashboard/medication' },
+    { icon: ClipboardList, label: 'Notes & Observations', href: '/dashboard/notes' },
+    { icon: AlertTriangle, label: 'Incident Report', href: '/dashboard/incidents' },
+    { icon: Clock, label: 'Timesheet / Sign-off', href: '/dashboard/timesheet' },
+    { icon: MessageSquare, label: 'Messages', href: '/dashboard/messages' },
+    { icon: GraduationCap, label: 'Profile & Training', href: '/dashboard/profile' },
   ]
 
   const clientMenuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-    { icon: Calendar, label: 'My Schedule', href: '/dashboard/schedule' },
-    { icon: Users, label: 'My Care Workers', href: '/dashboard/workers' },
-    { icon: ClipboardList, label: 'Care History', href: '/dashboard/care-logs' },
-    { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+    { icon: FileCheck, label: 'Care Plan', href: '/dashboard/care-plan' },
+    { icon: MessageSquare, label: 'Feedback & Requests', href: '/dashboard/feedback' },
   ]
 
   const menuItems = user?.role === 'admin'

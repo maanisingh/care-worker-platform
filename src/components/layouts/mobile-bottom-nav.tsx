@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Home, Users, Calendar, ClipboardList, Settings } from 'lucide-react'
+import { Home, Users, Calendar, ClipboardList, Settings, FileCheck, MessageSquare, Clipboard, Pill, Clock } from 'lucide-react'
 import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 
@@ -16,18 +16,16 @@ export function MobileBottomNav() {
   const navItems = user?.role === 'care-worker'
     ? [
         { icon: Home, label: 'Home', href: '/dashboard' },
-        { icon: Users, label: 'Clients', href: '/dashboard/clients' },
-        { icon: ClipboardList, label: 'Care Log', href: '/dashboard/care-logs' },
-        { icon: Calendar, label: 'Schedule', href: '/dashboard/schedule' },
-        { icon: Settings, label: 'More', href: '/dashboard/settings' },
+        { icon: Clipboard, label: 'Visits', href: '/dashboard/visit-detail' },
+        { icon: Pill, label: 'Meds', href: '/dashboard/medication' },
+        { icon: Clock, label: 'Time', href: '/dashboard/timesheet' },
+        { icon: MessageSquare, label: 'Messages', href: '/dashboard/messages' },
       ]
     : user?.role === 'client'
     ? [
         { icon: Home, label: 'Home', href: '/dashboard' },
-        { icon: Users, label: 'Workers', href: '/dashboard/workers' },
-        { icon: Calendar, label: 'Schedule', href: '/dashboard/schedule' },
-        { icon: ClipboardList, label: 'History', href: '/dashboard/care-logs' },
-        { icon: Settings, label: 'More', href: '/dashboard/settings' },
+        { icon: FileCheck, label: 'Care Plan', href: '/dashboard/care-plan' },
+        { icon: MessageSquare, label: 'Feedback', href: '/dashboard/feedback' },
       ]
     : [
         { icon: Home, label: 'Home', href: '/dashboard' },
@@ -39,7 +37,10 @@ export function MobileBottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-2xl pb-safe">
-      <div className="grid grid-cols-5 h-16">
+      <div className={cn(
+        "h-16",
+        user?.role === 'client' ? "grid grid-cols-3" : "grid grid-cols-5"
+      )}>
         {navItems.map((item) => {
           const isActive = pathname === item.href
           return (
